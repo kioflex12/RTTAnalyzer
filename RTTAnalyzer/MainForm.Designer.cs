@@ -1,5 +1,5 @@
 ﻿
-namespace RTTAnalyzer
+namespace RTTAnalyser
 {
     partial class MainForm
     {
