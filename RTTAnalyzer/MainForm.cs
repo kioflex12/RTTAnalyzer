@@ -13,32 +13,39 @@ namespace RTTAnalyzer
 {
     public partial class MainForm : Form
     {
-        private List<string> ipList = new List<string>() { "1.1.1.1", "8.8.8.8" };
+        private List<string> _ipList = new List<string>() {};
+        public DataGridView IpArray => ipArray;
+
+        public string IpList { set => _ipList.Add(value); }
 
         public MainForm()
         {
+            DirectoryController directoryController = new DirectoryController();
+            directoryController.ClearTempDirectory();
             InitializeComponent();
+            tabControl1.TabPages[0].Text = "Главная";
+            tabControl1.TabPages[1].Text = "Status";
+
         }
 
-        public Label GetStatusLabel => StatusLabel;
-        public DataGridView IpArray => ipArray;
-
+        
         private void StartButton_Click(object sender, EventArgs e)
         {
-
-            Thread task = new Thread(StartAscync);
+            LocalNetwork.GetLocalAddress(this);
+            Thread task = new Thread(StartAsync);
             task.Start();
 
         }
-
-        private void StartAscync()
+        
+        private void StartAsync()
         {
-            Unalyzer.InitAnylyzer(ipList, this);
+            Unalyzer.InitAnylyzer(_ipList, this);
         }
 
-        private void StartButton_Click_1(object sender, EventArgs e)
+        
+        private void OnFormClosing(object sender, EventArgs e)
         {
-
+            Environment.Exit(0);
         }
     }
 }

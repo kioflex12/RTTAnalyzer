@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -68,9 +69,20 @@ namespace RTTAnalyzer
             //Load config file
             _uI = uI;
             var config = JsonConvert.DeserializeObject<Dictionary<String, Object>>(File.ReadAllText("nmon.json"));
+            MethodInvoker methodInvoker = delegate ()
+            {
+                foreach (var host in pingHosts)
+                {
+                    _uI.IpArray.Columns.Add(host, host);
+
+                }
+            };
+            _uI.Invoke(methodInvoker);
+            PING_HOSTS = pingHosts;
+            //PING_HOSTS = PING_HOSTS = ((JArray)config["ping_hosts"]).ToObject<List<String>>();
+
 
             HTTP_TEST_HOST = (String)config["http_test_host"];
-            PING_HOSTS = pingHosts;
             ROUTER_IP = (String)config["router_ip"];
             HTTP_TEST_PORT = int.Parse((String)config["http_test_port"]);
             HTTP_TIMEOUT = int.Parse((String)config["http_timeout"]);
@@ -107,7 +119,7 @@ namespace RTTAnalyzer
             {
                 if (!File.Exists(OUT_CSV_FILE)) File.WriteAllText(OUT_CSV_FILE, CSV_HEADER);
             }
-            _statusLabel = uI.GetStatusLabel;
+            //_statusLabel = uI.GetStatusLabel;
             //ShowWindow(GetConsoleWindow(), SW_HIDE);
             DoMeasures();
         }
@@ -145,13 +157,34 @@ namespace RTTAnalyzer
             String raw_json = JsonConvert.SerializeObject(snapshot, Formatting.Indented);
             String snapshot_path = Path.Combine(Environment.CurrentDirectory, "snapshots", $"net{snapshot.measure_id}.json");
             File.WriteAllText(snapshot_path, raw_json);
-            Invoke(_uI.IpArray.Rows.Add(snapshot.avg_rtts));
+            String rtts = "";
+            int avg_rtt = 0;
+            foreach (var ci in PING_HOSTS)
+            {
+                rtts += $"{snapshot.avg_rtts[ci]};";
+                avg_rtt += snapshot.avg_rtts[ci];
+            }
+            avg_rtt = avg_rtt / PING_HOSTS.Count;
+            List<string> vs  = new List<string>();
+            MethodInvoker methodInvoker = delegate()
+            {
+                var index = _uI.IpArray.Rows.Add();
+
+                for (int i = 0; i < _uI.IpArray.Columns.Count; i++)
+                {
+                    _uI.IpArray.Rows[index].Cells[i].Value = snapshot.avg_rtts[_uI.IpArray.Columns[i].Name];
+                }
+            };
+            _uI.Invoke(methodInvoker);
+            
+                
+            
 
             if (WRITE_CSV)
             {
                 //Generate RTT string
-                String rtts = "";
-                int avg_rtt = 0;
+                rtts = "";
+                avg_rtt = 0;
                 foreach (var ci in PING_HOSTS)
                 {
                     rtts += $"{snapshot.avg_rtts[ci]};";
@@ -288,7 +321,7 @@ namespace RTTAnalyzer
                 try
                 {
                     var result = ping.SendPingAsync(host, PING_TIMEOUT);
-                    if (result.Status == TaskStatus.RanToCompletion)
+                    if (result.Result.Status == IPStatus.Success)
                     {
                         pkts_lost_row = 0;
                         local_success++;

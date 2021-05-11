@@ -1,0 +1,13 @@
+C:\Users\emyas\source\repos\tert\RTTAnalyzer\RTTAnalyzer\bin\Debug\RTTAnalyzer.exe.config
+C:\Users\emyas\source\repos\tert\RTTAnalyzer\RTTAnalyzer\bin\Debug\RTTAnalyzer.exe
+C:\Users\emyas\source\repos\tert\RTTAnalyzer\RTTAnalyzer\bin\Debug\RTTAnalyzer.pdb
+C:\Users\emyas\source\repos\tert\RTTAnalyzer\RTTAnalyzer\bin\Debug\Newtonsoft.Json.dll
+C:\Users\emyas\source\repos\tert\RTTAnalyzer\RTTAnalyzer\bin\Debug\Newtonsoft.Json.xml
+C:\Users\emyas\source\repos\tert\RTTAnalyzer\RTTAnalyzer\obj\Debug\RTTAnalyzer.csprojAssemblyReference.cache
+C:\Users\emyas\source\repos\tert\RTTAnalyzer\RTTAnalyzer\obj\Debug\RTTAnalyzer.MainForm.resources
+C:\Users\emyas\source\repos\tert\RTTAnalyzer\RTTAnalyzer\obj\Debug\RTTAnalyzer.Properties.Resources.resources
+C:\Users\emyas\source\repos\tert\RTTAnalyzer\RTTAnalyzer\obj\Debug\RTTAnalyzer.csproj.GenerateResource.cache
+C:\Users\emyas\source\repos\tert\RTTAnalyzer\RTTAnalyzer\obj\Debug\RTTAnalyzer.csproj.CoreCompileInputs.cache
+C:\Users\emyas\source\repos\tert\RTTAnalyzer\RTTAnalyzer\obj\Debug\RTTAnalyzer.csproj.CopyComplete
+C:\Users\emyas\source\repos\tert\RTTAnalyzer\RTTAnalyzer\obj\Debug\RTTAnalyzer.exe
+C:\Users\emyas\source\repos\tert\RTTAnalyzer\RTTAnalyzer\obj\Debug\RTTAnalyzer.pdb
