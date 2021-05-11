@@ -8,7 +8,7 @@
   "ping_hosts": [ "8.8.8.8", "1.1.1.1", "77.88.55.50" ],
   "measure_delay": "1000",
   "cui_output": "true",
-  "router_ip": "192.168.1.1",
+  "router_ip": "192.168.0.1",
   "nq_max_loss": "0,1",
   "tg_token": "1801934431:AAFiy0wBgwQlzFcLu97jvRzow3tYncYBuco",
   "tg_chat_id": "878394860",

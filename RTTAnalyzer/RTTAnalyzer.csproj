@@ -49,6 +49,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Status.cs" />
     <Compile Include="LocalNetwork.cs" />
     <Compile Include="DirectoryController.cs" />
     <Compile Include="Unalyzer.cs" />

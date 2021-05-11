@@ -61,7 +61,6 @@ namespace RTTAnalyzer
         static DateTime first_fail_time;
         static bool prev_inet_ok = true;
         static MainForm _uI;
-        static Label _statusLabel;
         #endregion
 
         public static void InitAnylyzer(List<string> pingHosts, MainForm uI)
@@ -147,7 +146,6 @@ namespace RTTAnalyzer
                 File.AppendAllText("nmon.log", msg);
             }
             catch { }
-            _statusLabel.Text = msg;
             if (CUI_ENABLED) Console.WriteLine(msg);
             TgNotify(msg, false);
         }
@@ -159,10 +157,15 @@ namespace RTTAnalyzer
             File.WriteAllText(snapshot_path, raw_json);
             String rtts = "";
             int avg_rtt = 0;
+            int max_rtt = 0;
             foreach (var ci in PING_HOSTS)
             {
                 rtts += $"{snapshot.avg_rtts[ci]};";
                 avg_rtt += snapshot.avg_rtts[ci];
+                max_rtt = snapshot.avg_rtts[ci] > max_rtt ? snapshot.avg_rtts[ci] : max_rtt; 
+                
+
+               
             }
             avg_rtt = avg_rtt / PING_HOSTS.Count;
             List<string> vs  = new List<string>();
@@ -174,10 +177,18 @@ namespace RTTAnalyzer
                 {
                     _uI.IpArray.Rows[index].Cells[i].Value = snapshot.avg_rtts[_uI.IpArray.Columns[i].Name];
                 }
+                _uI.Status.MaxPing = _uI.Status.MaxPing > max_rtt ? _uI.Status.MaxPing : max_rtt;
+                _uI.Status.AvgPing = avg_rtt;
+                _uI.Status.CountMembers = PING_HOSTS.Count;
+                if (_uI.Status.AvgPing < 1)
+                {
+                    _uI.Status.NetworkStatus = "Good";
+                }
+               
             };
             _uI.Invoke(methodInvoker);
-            
-                
+
+            _uI.UpdateStatusSummary();
             
 
             if (WRITE_CSV)
@@ -224,7 +235,6 @@ namespace RTTAnalyzer
                 if (prr.Status != IPStatus.Success)
                 {
 
-                    _statusLabel.Text = "bad";
                     //Router is unreachable. Don't waste resources
                     snapshot.avg_rtts = new Dictionary<string, int>();
                     snapshot.http_ok = false;

@@ -34,9 +34,19 @@ namespace RTTAnalyzer
             this.ipArray = new System.Windows.Forms.DataGridView();
             this.StartButton = new System.Windows.Forms.Button();
             this.tabPage2 = new System.Windows.Forms.TabPage();
+            this.botLink = new System.Windows.Forms.LinkLabel();
+            this.label4 = new System.Windows.Forms.Label();
+            this.CountMembersTextBox = new System.Windows.Forms.TextBox();
+            this.label3 = new System.Windows.Forms.Label();
+            this.NetworkStatusTextBox = new System.Windows.Forms.TextBox();
+            this.label2 = new System.Windows.Forms.Label();
+            this.MaxPingTextBox = new System.Windows.Forms.TextBox();
+            this.label1 = new System.Windows.Forms.Label();
+            this.AvgPingTextBox = new System.Windows.Forms.TextBox();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.ipArray)).BeginInit();
+            this.tabPage2.SuspendLayout();
             this.SuspendLayout();
             // 
             // tabControl1
@@ -82,13 +92,101 @@ namespace RTTAnalyzer
             // 
             // tabPage2
             // 
+            this.tabPage2.Controls.Add(this.botLink);
+            this.tabPage2.Controls.Add(this.label4);
+            this.tabPage2.Controls.Add(this.CountMembersTextBox);
+            this.tabPage2.Controls.Add(this.label3);
+            this.tabPage2.Controls.Add(this.NetworkStatusTextBox);
+            this.tabPage2.Controls.Add(this.label2);
+            this.tabPage2.Controls.Add(this.MaxPingTextBox);
+            this.tabPage2.Controls.Add(this.label1);
+            this.tabPage2.Controls.Add(this.AvgPingTextBox);
             this.tabPage2.Location = new System.Drawing.Point(4, 22);
             this.tabPage2.Name = "tabPage2";
             this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage2.Size = new System.Drawing.Size(629, 461);
+            this.tabPage2.Size = new System.Drawing.Size(414, 289);
             this.tabPage2.TabIndex = 1;
             this.tabPage2.Text = "tabPage2";
             this.tabPage2.UseVisualStyleBackColor = true;
+            // 
+            // botLink
+            // 
+            this.botLink.AutoSize = true;
+            this.botLink.Location = new System.Drawing.Point(30, 251);
+            this.botLink.Name = "botLink";
+            this.botLink.Size = new System.Drawing.Size(129, 13);
+            this.botLink.TabIndex = 8;
+            this.botLink.TabStop = true;
+            this.botLink.Text = "https://t.me/ping_api_bot";
+            this.botLink.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.linkLabel1_LinkClicked);
+            // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Location = new System.Drawing.Point(27, 72);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(78, 13);
+            this.label4.TabIndex = 7;
+            this.label4.Text = "CountMembers";
+            // 
+            // CountMembersTextBox
+            // 
+            this.CountMembersTextBox.Location = new System.Drawing.Point(18, 91);
+            this.CountMembersTextBox.Name = "CountMembersTextBox";
+            this.CountMembersTextBox.ReadOnly = true;
+            this.CountMembersTextBox.Size = new System.Drawing.Size(100, 20);
+            this.CountMembersTextBox.TabIndex = 6;
+            // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.Location = new System.Drawing.Point(239, 13);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(77, 13);
+            this.label3.TabIndex = 5;
+            this.label3.Text = "NetworkStatus";
+            // 
+            // NetworkStatusTextBox
+            // 
+            this.NetworkStatusTextBox.Location = new System.Drawing.Point(230, 32);
+            this.NetworkStatusTextBox.Name = "NetworkStatusTextBox";
+            this.NetworkStatusTextBox.ReadOnly = true;
+            this.NetworkStatusTextBox.Size = new System.Drawing.Size(100, 20);
+            this.NetworkStatusTextBox.TabIndex = 4;
+            // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(152, 13);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(48, 13);
+            this.label2.TabIndex = 3;
+            this.label2.Text = "MaxPing";
+            // 
+            // MaxPingTextBox
+            // 
+            this.MaxPingTextBox.Location = new System.Drawing.Point(124, 32);
+            this.MaxPingTextBox.Name = "MaxPingTextBox";
+            this.MaxPingTextBox.ReadOnly = true;
+            this.MaxPingTextBox.Size = new System.Drawing.Size(100, 20);
+            this.MaxPingTextBox.TabIndex = 2;
+            // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(48, 13);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(47, 13);
+            this.label1.TabIndex = 1;
+            this.label1.Text = "AvgPing";
+            // 
+            // AvgPingTextBox
+            // 
+            this.AvgPingTextBox.Location = new System.Drawing.Point(18, 32);
+            this.AvgPingTextBox.Name = "AvgPingTextBox";
+            this.AvgPingTextBox.ReadOnly = true;
+            this.AvgPingTextBox.Size = new System.Drawing.Size(100, 20);
+            this.AvgPingTextBox.TabIndex = 0;
             // 
             // MainForm
             // 
@@ -102,6 +200,8 @@ namespace RTTAnalyzer
             this.tabControl1.ResumeLayout(false);
             this.tabPage1.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.ipArray)).EndInit();
+            this.tabPage2.ResumeLayout(false);
+            this.tabPage2.PerformLayout();
             this.ResumeLayout(false);
 
         }
@@ -113,6 +213,15 @@ namespace RTTAnalyzer
         private System.Windows.Forms.TabPage tabPage2;
         private System.Windows.Forms.DataGridView ipArray;
         private System.Windows.Forms.Button StartButton;
+        private System.Windows.Forms.Label label4;
+        private System.Windows.Forms.TextBox CountMembersTextBox;
+        private System.Windows.Forms.Label label3;
+        private System.Windows.Forms.TextBox NetworkStatusTextBox;
+        private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.TextBox MaxPingTextBox;
+        private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.TextBox AvgPingTextBox;
+        private System.Windows.Forms.LinkLabel botLink;
     }
 }
 
