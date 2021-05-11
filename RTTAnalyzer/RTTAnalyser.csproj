@@ -49,10 +49,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="InternetIp.cs" />
     <Compile Include="Status.cs" />
     <Compile Include="LocalNetwork.cs" />
     <Compile Include="DirectoryController.cs" />
-    <Compile Include="Unalyzer.cs" />
+    <Compile Include="ThreadController.cs" />
+    <Compile Include="Unalyser.cs" />
     <Compile Include="MainForm.cs">
       <SubType>Form</SubType>
     </Compile>

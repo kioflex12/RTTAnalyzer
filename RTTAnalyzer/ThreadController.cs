@@ -25,20 +25,20 @@ namespace RTTAnalyzer
                 CloseThread();
             _thread = new Thread(InitThread);
             _thread.Start();
-            Unalyzer.locker = false;
+            Unalyser.locker = false;
             
         }
 
         public void InitThread()
         {
-            Unalyzer.InitAnylyzer(_status.GetIpList, _main);
+            Unalyser.InitAnylyzer(_status.GetIpList, _main);
         }
 
         public void CloseThread()
         {
             if (_thread != null)
             {
-                Unalyzer.locker = true;
+                Unalyser.locker = true;
                 _thread.Abort();
                 _thread = null;
             }

@@ -17,7 +17,7 @@ using System.Windows.Forms;
 
 namespace RTTAnalyzer
 {
-    static class Unalyzer
+    static class Unalyser
     {
         #region Service code (PInvoke)
         [DllImport("kernel32.dll")]
