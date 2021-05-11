@@ -9,6 +9,7 @@ namespace RTTAnalyzer
 {
     public class Status
     {
+        //private List<string> _ipList = new List<string>() { "8.8.8.8", "1.1.1.1", "77.88.55.50" };
         private List<string> _ipList = new List<string>() { };
         private int _countMembers = 0;
         private int _avgPing = 0;

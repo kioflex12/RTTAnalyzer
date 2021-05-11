@@ -2,6 +2,7 @@
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -61,7 +62,9 @@ namespace RTTAnalyzer
         static DateTime first_fail_time;
         static bool prev_inet_ok = true;
         static MainForm _uI;
+        public static bool locker = true;
         #endregion
+
 
         public static void InitAnylyzer(List<string> pingHosts, MainForm uI)
         {
@@ -70,8 +73,17 @@ namespace RTTAnalyzer
             var config = JsonConvert.DeserializeObject<Dictionary<String, Object>>(File.ReadAllText("nmon.json"));
             MethodInvoker methodInvoker = delegate ()
             {
+                //DataTable data = (DataTable)_uI.IpArray.DataSource;
+                foreach (DataGridViewColumn column in _uI.IpArray.Columns)
+                {
+                    _uI.IpArray.Columns.Remove(column);
+                }
+                
+
+                _uI.IpArray.Columns.Clear();
                 foreach (var host in pingHosts)
                 {
+
                     _uI.IpArray.Columns.Add(host, host);
 
                 }
@@ -152,165 +164,180 @@ namespace RTTAnalyzer
 
         static void SaveSnapshot(net_state snapshot)
         {
-            String raw_json = JsonConvert.SerializeObject(snapshot, Formatting.Indented);
-            String snapshot_path = Path.Combine(Environment.CurrentDirectory, "snapshots", $"net{snapshot.measure_id}.json");
-            File.WriteAllText(snapshot_path, raw_json);
-            String rtts = "";
-            int avg_rtt = 0;
-            int max_rtt = 0;
-            foreach (var ci in PING_HOSTS)
+            if (!locker)
             {
-                rtts += $"{snapshot.avg_rtts[ci]};";
-                avg_rtt += snapshot.avg_rtts[ci];
-                max_rtt = snapshot.avg_rtts[ci] > max_rtt ? snapshot.avg_rtts[ci] : max_rtt; 
-                
-
-               
-            }
-            avg_rtt = avg_rtt / PING_HOSTS.Count;
-            List<string> vs  = new List<string>();
-            MethodInvoker methodInvoker = delegate()
-            {
-                var index = _uI.IpArray.Rows.Add();
-
-                for (int i = 0; i < _uI.IpArray.Columns.Count; i++)
-                {
-                    _uI.IpArray.Rows[index].Cells[i].Value = snapshot.avg_rtts[_uI.IpArray.Columns[i].Name];
-                }
-                _uI.Status.MaxPing = _uI.Status.MaxPing > max_rtt ? _uI.Status.MaxPing : max_rtt;
-                _uI.Status.AvgPing = avg_rtt;
-                _uI.Status.CountMembers = PING_HOSTS.Count;
-                if (_uI.Status.AvgPing < 1)
-                {
-                    _uI.Status.NetworkStatus = "Good";
-                }
-               
-            };
-            _uI.Invoke(methodInvoker);
-
-            _uI.UpdateStatusSummary();
-            
-
-            if (WRITE_CSV)
-            {
-                //Generate RTT string
-                rtts = "";
-                avg_rtt = 0;
+                String raw_json = JsonConvert.SerializeObject(snapshot, Formatting.Indented);
+                String snapshot_path = Path.Combine(Environment.CurrentDirectory, "snapshots", $"net{snapshot.measure_id}.json");
+                File.WriteAllText(snapshot_path, raw_json);
+                String rtts = "";
+                int avg_rtt = 0;
+                int max_rtt = 0;
                 foreach (var ci in PING_HOSTS)
                 {
                     rtts += $"{snapshot.avg_rtts[ci]};";
                     avg_rtt += snapshot.avg_rtts[ci];
+                    max_rtt = snapshot.avg_rtts[ci] > max_rtt ? snapshot.avg_rtts[ci] : max_rtt;
+
+
+
                 }
                 avg_rtt = avg_rtt / PING_HOSTS.Count;
-                File.AppendAllText(OUT_CSV_FILE, CSV_PATTERN
-                    .Replace("FTIME", snapshot.measure_time.ToShortDateString() + " " + snapshot.measure_time.ToShortTimeString())
-                    .Replace("IUP", snapshot.inet_ok.ToString())
-                    .Replace("AVGRTT", avg_rtt.ToString())
-                    .Replace("ROUTERRTT", snapshot.router_rtt.ToString())
-                    .Replace("LOSS", snapshot.packet_loss.ToString())
-                    .Replace("HTTP", snapshot.http_ok.ToString())
-                    .Replace("MID", snapshot.measure_id.ToString())
-                    .Replace("STIME", snapshot.measure_time.ToShortTimeString())
-                    .Replace("SEQ", seq_id++.ToString())
-                    .Replace("RN", $"{rtts};;\r\n"));
+                List<string> vs = new List<string>();
+                MethodInvoker methodInvoker = delegate ()
+                {
+                    var index = _uI.IpArray.Rows.Add();
+
+                    for (int i = 0; i < _uI.IpArray.Columns.Count; i++)
+                    {
+                        _uI.IpArray.Rows[index].Cells[i].Value = snapshot.avg_rtts[_uI.IpArray.Columns[i].Name];
+                    }
+                    _uI.Status.MaxPing = _uI.Status.MaxPing > max_rtt ? _uI.Status.MaxPing : max_rtt;
+                    _uI.Status.AvgPing = avg_rtt;
+                    _uI.Status.CountMembers = PING_HOSTS.Count;
+                    if (_uI.Status.AvgPing < 1)
+                    {
+                        _uI.Status.NetworkStatus = "Good";
+                    }
+                    else
+                    {
+                        _uI.Status.NetworkStatus = "Bad";
+
+                    }
+                    _uI.UpdateStatusSummary();
+                };
+                _uI.Invoke(methodInvoker);
+
+
+
+
+                if (WRITE_CSV)
+                {
+                    //Generate RTT string
+                    rtts = "";
+                    avg_rtt = 0;
+                    foreach (var ci in PING_HOSTS)
+                    {
+                        rtts += $"{snapshot.avg_rtts[ci]};";
+                        avg_rtt += snapshot.avg_rtts[ci];
+                    }
+                    avg_rtt = avg_rtt / PING_HOSTS.Count;
+                    File.AppendAllText(OUT_CSV_FILE, CSV_PATTERN
+                        .Replace("FTIME", snapshot.measure_time.ToShortDateString() + " " + snapshot.measure_time.ToShortTimeString())
+                        .Replace("IUP", snapshot.inet_ok.ToString())
+                        .Replace("AVGRTT", avg_rtt.ToString())
+                        .Replace("ROUTERRTT", snapshot.router_rtt.ToString())
+                        .Replace("LOSS", snapshot.packet_loss.ToString())
+                        .Replace("HTTP", snapshot.http_ok.ToString())
+                        .Replace("MID", snapshot.measure_id.ToString())
+                        .Replace("STIME", snapshot.measure_time.ToShortTimeString())
+                        .Replace("SEQ", seq_id++.ToString())
+                        .Replace("RN", $"{rtts};;\r\n"));
+                }
             }
+            else return;
         }
 
 
-        private static Task DoMeasures()
+        private static void DoMeasures()
         {
             System.Timers.Timer _timer = new System.Timers.Timer();
             _timer.AutoReset = true;
             _timer.Interval = MEASURE_DELAY;
             _timer.Elapsed += delegate
             {
-                net_state snapshot = new net_state();
-                snapshot.inet_ok = true;
-                snapshot.measure_id = start_measure_id++;
-                snapshot.measure_time = DateTime.Now;
-                Ping ping = new Ping();
-                //First, check if router is available
-                var prr = ping.Send(ROUTER_IP, PING_TIMEOUT);
-                snapshot.router_rtt = prr.Status == IPStatus.Success ? (int)prr.RoundtripTime : PING_TIMEOUT;
-                if (prr.Status != IPStatus.Success)
+                if (!locker)
                 {
+                    net_state snapshot = new net_state();
+                    snapshot.inet_ok = true;
+                    snapshot.measure_id = start_measure_id++;
+                    snapshot.measure_time = DateTime.Now;
+                    Ping ping = new Ping();
+                    //First, check if router is available
+                    var prr = ping.Send(ROUTER_IP, PING_TIMEOUT);
+                    snapshot.router_rtt = prr.Status == IPStatus.Success ? (int)prr.RoundtripTime : PING_TIMEOUT;
+                    if (prr.Status != IPStatus.Success)
+                    {
 
-                    //Router is unreachable. Don't waste resources
-                    snapshot.avg_rtts = new Dictionary<string, int>();
-                    snapshot.http_ok = false;
-                    snapshot.inet_ok = false;
-                    snapshot.packet_loss = 1;
+                        //Router is unreachable. Don't waste resources
+                        snapshot.avg_rtts = new Dictionary<string, int>();
+                        snapshot.http_ok = false;
+                        snapshot.inet_ok = false;
+                        snapshot.packet_loss = 1;
+                        foreach (var ci in PING_HOSTS)
+                        {
+                            snapshot.avg_rtts.Add(ci, PING_TIMEOUT);
+                        }
+                        WriteLog("Router was unreachable.");
+
+                        SaveSnapshot(snapshot);
+                        if (prev_inet_ok)
+                        {
+                            //Internet was fine but failed now
+                            prev_inet_ok = false;
+                            first_fail_time = DateTime.Now;
+                        }
+                        return;
+                    }
+                    //Still alive so router is up
+                    try
+                    {
+                        snapshot.http_ok = true;
+                        TcpClient tc = new TcpClient();
+                        tc.BeginConnect(HTTP_TEST_HOST, HTTP_TEST_PORT, null, null);
+                        Thread.Sleep(HTTP_TIMEOUT);
+                        if (!tc.Connected)
+                        {
+                            snapshot.http_ok = false;
+                        }
+                        tc.Dispose();
+                    }
+                    catch { snapshot.http_ok = false; snapshot.inet_ok = false; }
+                    //Now do ping test
+                    exited_threads = 0;
+                    pkt_sent = 0;
+                    success_pkts = 0;
+                    total_time = 0;
+                    measure_results = new Dictionary<string, int>();
                     foreach (var ci in PING_HOSTS)
                     {
-                        snapshot.avg_rtts.Add(ci, PING_TIMEOUT);
+                        Thread thread = new Thread(new ParameterizedThreadStart(PerformPingTest));
+                        thread.Start(ci);
                     }
-                    WriteLog("Router was unreachable.");
-
+                    while (exited_threads < PING_HOSTS.Count) continue;
+                    //Analyze results
+                    snapshot.avg_rtts = measure_results;
+                    snapshot.packet_loss = (double)(pkt_sent - success_pkts) / pkt_sent;
+                    snapshot.inet_ok = !(
+                        snapshot.http_ok == false ||
+                        ((double)total_time / success_pkts >= 0.75 * PING_TIMEOUT) ||
+                        snapshot.packet_loss >= MAX_PKT_LOSS ||
+                        snapshot.router_rtt == PING_TIMEOUT);
                     SaveSnapshot(snapshot);
-                    if (prev_inet_ok)
+                    if (prev_inet_ok && !snapshot.inet_ok)
                     {
                         //Internet was fine but failed now
                         prev_inet_ok = false;
                         first_fail_time = DateTime.Now;
                     }
-                    return;
-                }
-                //Still alive so router is up
-                try
-                {
-                    snapshot.http_ok = true;
-                    TcpClient tc = new TcpClient();
-                    tc.BeginConnect(HTTP_TEST_HOST, HTTP_TEST_PORT, null, null);
-                    Thread.Sleep(HTTP_TIMEOUT);
-                    if (!tc.Connected)
+                    else if (!prev_inet_ok && snapshot.inet_ok)
                     {
-                        snapshot.http_ok = false;
+                        String t_s = new TimeSpan(DateTime.Now.Ticks - first_fail_time.Ticks).ToString(@"hh\:mm\:ss");
+                        TgNotify($"Internet was down from {first_fail_time.ToShortTimeString()} to {DateTime.Now.ToShortTimeString()} (downtime {t_s})\r\n\r\n" +
+                            $"Current average ping: {snapshot.avg_rtts.Values.Average()} ms\r\n" +
+                            $"HTTP test: " + (snapshot.http_ok ? "PASSED" : "FAILED") + "\r\n" +
+                            $"Packet loss: " + (snapshot.packet_loss * 100).ToString("N2"), true);
+                        prev_inet_ok = true;
                     }
-                    tc.Dispose();
                 }
-                catch { snapshot.http_ok = false; snapshot.inet_ok = false; }
-                //Now do ping test
-                exited_threads = 0;
-                pkt_sent = 0;
-                success_pkts = 0;
-                total_time = 0;
-                measure_results = new Dictionary<string, int>();
-                foreach (var ci in PING_HOSTS)
-                {
-                    Thread thread = new Thread(new ParameterizedThreadStart(PerformPingTest));
-                    thread.Start(ci);
-                }
-                while (exited_threads < PING_HOSTS.Count) continue;
-                //Analyze results
-                snapshot.avg_rtts = measure_results;
-                snapshot.packet_loss = (double)(pkt_sent - success_pkts) / pkt_sent;
-                snapshot.inet_ok = !(
-                    snapshot.http_ok == false ||
-                    ((double)total_time / success_pkts >= 0.75 * PING_TIMEOUT) ||
-                    snapshot.packet_loss >= MAX_PKT_LOSS ||
-                    snapshot.router_rtt == PING_TIMEOUT);
-                SaveSnapshot(snapshot);
-                if (prev_inet_ok && !snapshot.inet_ok)
-                {
-                    //Internet was fine but failed now
-                    prev_inet_ok = false;
-                    first_fail_time = DateTime.Now;
-                }
-                else if (!prev_inet_ok && snapshot.inet_ok)
-                {
-                    String t_s = new TimeSpan(DateTime.Now.Ticks - first_fail_time.Ticks).ToString(@"hh\:mm\:ss");
-                    TgNotify($"Internet was down from {first_fail_time.ToShortTimeString()} to {DateTime.Now.ToShortTimeString()} (downtime {t_s})\r\n\r\n" +
-                        $"Current average ping: {snapshot.avg_rtts.Values.Average()} ms\r\n" +
-                        $"HTTP test: " + (snapshot.http_ok ? "PASSED" : "FAILED") + "\r\n" +
-                        $"Packet loss: " + (snapshot.packet_loss * 100).ToString("N2"), true);
-                    prev_inet_ok = true;
-                }
+                else _timer.Stop() ;
             };
             //Foo();
             ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12 | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls;
             httpc = new HttpClient();
             _timer.Start();
             //TgNotify("nmon is now running", true);
+            if (locker)
+                return ;
             while (true) Thread.Sleep(1000000);
         }
         static void PerformPingTest(Object arg)

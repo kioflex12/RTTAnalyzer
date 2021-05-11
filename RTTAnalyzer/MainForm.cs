@@ -16,32 +16,48 @@ namespace RTTAnalyzer
     {
         public DataGridView IpArray => ipArray;
         public Status Status;
-
+        private Thread _thread;
+        private DirectoryController directoryController;
+        private ThreadController _threadController;
+        
         public MainForm()
         {
-            DirectoryController directoryController = new DirectoryController();
+            InitializeComponent();
+        }
+
+        private void MainForm_Load(object sender, EventArgs e)
+        {
+            directoryController = new DirectoryController();
             directoryController.ClearTempDirectory();
             Status = new Status();
-            InitializeComponent();
+            _threadController = new ThreadController(Status, this);
             tabControl1.TabPages[0].Text = "Главная";
             tabControl1.TabPages[1].Text = "Status";
+            InternetIpList.SelectedItem = InternetIpList.Items[0];
 
         }
 
 
         private void StartButton_Click(object sender, EventArgs e)
         {
+            
+            Status.GetIpList.Clear();
+            ipArray.Columns.Clear();
+
+            ChangeStateControllsButtons();
             LocalNetwork.GetLocalAddress(this);
-            Thread task = new Thread(StartAsync);
-            task.Start();
+            _threadController.StartThread();
+           
 
         }
 
-        private void StartAsync()
+       private void ChangeStateControllsButtons()
         {
-            Unalyzer.InitAnylyzer(Status.GetIpList, this);
+            StopButton.Enabled = !StopButton.Enabled;
+            Thread.Sleep(1000);
+            StartButton.Enabled = !StartButton.Enabled;
         }
-        
+
         public void UpdateStatusSummary()
         {
             AvgPingTextBox.Text = Status.AvgPing.ToString();
@@ -59,5 +75,18 @@ namespace RTTAnalyzer
         {
             Process.Start(botLink.Text);
         }
+
+        private void StopButton_Click(object sender, EventArgs e)
+        {
+            _threadController.CloseThread();
+            ChangeStateControllsButtons();
+        }
+
+        private void configLabel_Click(object sender, EventArgs e)
+        {
+            Process.Start("nmon.json");
+        }
+
+       
     }
 }

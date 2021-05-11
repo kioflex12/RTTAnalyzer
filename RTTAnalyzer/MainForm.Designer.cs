@@ -31,6 +31,9 @@ namespace RTTAnalyzer
         {
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
+            this.InternetIpList = new System.Windows.Forms.ComboBox();
+            this.configLabel = new System.Windows.Forms.Label();
+            this.StopButton = new System.Windows.Forms.Button();
             this.ipArray = new System.Windows.Forms.DataGridView();
             this.StartButton = new System.Windows.Forms.Button();
             this.tabPage2 = new System.Windows.Forms.TabPage();
@@ -62,8 +65,12 @@ namespace RTTAnalyzer
             // 
             // tabPage1
             // 
+            this.tabPage1.Controls.Add(this.InternetIpList);
+            this.tabPage1.Controls.Add(this.configLabel);
+            this.tabPage1.Controls.Add(this.StopButton);
             this.tabPage1.Controls.Add(this.ipArray);
             this.tabPage1.Controls.Add(this.StartButton);
+            this.tabPage1.Cursor = System.Windows.Forms.Cursors.Default;
             this.tabPage1.Location = new System.Drawing.Point(4, 22);
             this.tabPage1.Name = "tabPage1";
             this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
@@ -71,6 +78,40 @@ namespace RTTAnalyzer
             this.tabPage1.TabIndex = 0;
             this.tabPage1.Text = "tabPage1";
             this.tabPage1.UseVisualStyleBackColor = true;
+            // 
+            // InternetIpList
+            // 
+            this.InternetIpList.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.InternetIpList.FormattingEnabled = true;
+            this.InternetIpList.Items.AddRange(new object[] {
+            "yandex.ru",
+            "google.com"});
+            this.InternetIpList.Location = new System.Drawing.Point(287, 53);
+            this.InternetIpList.Name = "InternetIpList";
+            this.InternetIpList.Size = new System.Drawing.Size(121, 21);
+            this.InternetIpList.TabIndex = 7;
+            // 
+            // configLabel
+            // 
+            this.configLabel.AutoSize = true;
+            this.configLabel.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.configLabel.Location = new System.Drawing.Point(342, 12);
+            this.configLabel.Name = "configLabel";
+            this.configLabel.Size = new System.Drawing.Size(37, 13);
+            this.configLabel.TabIndex = 6;
+            this.configLabel.Text = "Config";
+            this.configLabel.Click += new System.EventHandler(this.configLabel_Click);
+            // 
+            // StopButton
+            // 
+            this.StopButton.Enabled = false;
+            this.StopButton.Location = new System.Drawing.Point(221, 229);
+            this.StopButton.Name = "StopButton";
+            this.StopButton.Size = new System.Drawing.Size(75, 23);
+            this.StopButton.TabIndex = 5;
+            this.StopButton.Text = "Stop";
+            this.StopButton.UseVisualStyleBackColor = true;
+            this.StopButton.Click += new System.EventHandler(this.StopButton_Click);
             // 
             // ipArray
             // 
@@ -197,8 +238,10 @@ namespace RTTAnalyzer
             this.Name = "MainForm";
             this.Text = "Form1";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.OnFormClosing);
+            this.Load += new System.EventHandler(this.MainForm_Load);
             this.tabControl1.ResumeLayout(false);
             this.tabPage1.ResumeLayout(false);
+            this.tabPage1.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.ipArray)).EndInit();
             this.tabPage2.ResumeLayout(false);
             this.tabPage2.PerformLayout();
@@ -222,6 +265,9 @@ namespace RTTAnalyzer
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.TextBox AvgPingTextBox;
         private System.Windows.Forms.LinkLabel botLink;
+        private System.Windows.Forms.Button StopButton;
+        private System.Windows.Forms.Label configLabel;
+        private System.Windows.Forms.ComboBox InternetIpList;
     }
 }
 
