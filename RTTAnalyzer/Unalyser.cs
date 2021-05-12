@@ -65,7 +65,7 @@ namespace RTTAnalyser
         public static bool locker = true;
         #endregion
 
-
+        static List<string> dates = new List<string>() { };
         public static void InitAnylyzer(List<string> pingHosts, MainForm uI)
         {
             //Load config file
@@ -153,12 +153,7 @@ namespace RTTAnalyser
         static void WriteLog(String message)
         {
             var msg = $"[{DateTime.Now.ToShortTimeString()}] {message}\r\n";
-            try
-            {
-                File.AppendAllText("nmon.log", msg);
-            }
-            catch { }
-            if (CUI_ENABLED) Console.WriteLine(msg);
+            MessageBox.Show(msg);
             TgNotify(msg, false);
         }
 
@@ -172,35 +167,57 @@ namespace RTTAnalyser
                 String rtts = "";
                 int avg_rtt = 0;
                 int max_rtt = 0;
-                foreach (var ci in PING_HOSTS)
-                {
-                    rtts += $"{snapshot.avg_rtts[ci]};";
-                    avg_rtt += snapshot.avg_rtts[ci];
-                    max_rtt = snapshot.avg_rtts[ci] > max_rtt ? snapshot.avg_rtts[ci] : max_rtt;
+                int avg_rtt_local = 0;
+                //foreach (var ci in PING_HOSTS)
+                //{
+                //    rtts += $"{snapshot.avg_rtts[ci]};";
+                //    avg_rtt += snapshot.avg_rtts[ci];
+                //    max_rtt = snapshot.avg_rtts[ci] > max_rtt ? snapshot.avg_rtts[ci] : max_rtt;
 
 
 
-                }
-                avg_rtt = avg_rtt / PING_HOSTS.Count;
+                //}
+               
                 List<string> vs = new List<string>();
                 MethodInvoker methodInvoker = delegate ()
                 {
+                    if (_uI.IpArray.Rows.Count > 0)
+                    {
+                        foreach (DataGridViewRow row in _uI.IpArray.Rows)
+                        {
+                            int res;
+                            int.TryParse((row.Cells[0].Value.ToString()), out res);
+                            avg_rtt += res;
+                        }
+                        avg_rtt = avg_rtt / _uI.IpArray.Rows.Count;
+                    }
                     var index = _uI.IpArray.Rows.Add();
 
                     for (int i = 0; i < _uI.IpArray.Columns.Count; i++)
                     {
                         _uI.IpArray.Rows[index].Cells[i].Value = snapshot.avg_rtts[_uI.IpArray.Columns[i].Name];
+
                     }
                     _uI.Status.MaxPing = _uI.Status.MaxPing > max_rtt ? _uI.Status.MaxPing : max_rtt;
+
+                    for (int i = 1; i < PING_HOSTS.Count; i++)
+                    {
+                        avg_rtt_local += snapshot.avg_rtts[PING_HOSTS[i]];
+                    }
+                    _uI.Chart.UpdateChart(snapshot.measure_time.ToString(), snapshot.avg_rtts[PING_HOSTS[0]]);
+
                     _uI.Status.AvgPing = avg_rtt;
                     _uI.Status.CountMembers = PING_HOSTS.Count;
-                    if (_uI.Status.AvgPing < 1)
+                    _uI.Status.IntenetStatus = snapshot.inet_ok;
+                    if ((avg_rtt_local / PING_HOSTS.Count - 1) < 1)
                     {
                         _uI.Status.NetworkStatus = "Good";
                     }
                     else
                     {
                         _uI.Status.NetworkStatus = "Bad";
+                        WriteLog("Плохое соеденение в локальной сети");
+
 
                     }
                     _uI.UpdateStatusSummary();

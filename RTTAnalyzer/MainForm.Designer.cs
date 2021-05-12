@@ -37,6 +37,8 @@ namespace RTTAnalyser
             this.ipArray = new System.Windows.Forms.DataGridView();
             this.StartButton = new System.Windows.Forms.Button();
             this.tabPage2 = new System.Windows.Forms.TabPage();
+            this.label5 = new System.Windows.Forms.Label();
+            this.intenetStatusTextBox = new System.Windows.Forms.TextBox();
             this.botLink = new System.Windows.Forms.LinkLabel();
             this.label4 = new System.Windows.Forms.Label();
             this.CountMembersTextBox = new System.Windows.Forms.TextBox();
@@ -46,16 +48,20 @@ namespace RTTAnalyser
             this.MaxPingTextBox = new System.Windows.Forms.TextBox();
             this.label1 = new System.Windows.Forms.Label();
             this.AvgPingTextBox = new System.Windows.Forms.TextBox();
+            this.tabPage3 = new System.Windows.Forms.TabPage();
+            this.cartesianChart = new LiveCharts.WinForms.CartesianChart();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.ipArray)).BeginInit();
             this.tabPage2.SuspendLayout();
+            this.tabPage3.SuspendLayout();
             this.SuspendLayout();
             // 
             // tabControl1
             // 
             this.tabControl1.Controls.Add(this.tabPage1);
             this.tabControl1.Controls.Add(this.tabPage2);
+            this.tabControl1.Controls.Add(this.tabPage3);
             this.tabControl1.Dock = System.Windows.Forms.DockStyle.Fill;
             this.tabControl1.Location = new System.Drawing.Point(0, 0);
             this.tabControl1.Name = "tabControl1";
@@ -83,9 +89,6 @@ namespace RTTAnalyser
             // 
             this.InternetIpList.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.InternetIpList.FormattingEnabled = true;
-            this.InternetIpList.Items.AddRange(new object[] {
-            "yandex.ru",
-            "google.com"});
             this.InternetIpList.Location = new System.Drawing.Point(287, 53);
             this.InternetIpList.Name = "InternetIpList";
             this.InternetIpList.Size = new System.Drawing.Size(121, 21);
@@ -115,9 +118,12 @@ namespace RTTAnalyser
             // 
             // ipArray
             // 
+            this.ipArray.AllowUserToAddRows = false;
+            this.ipArray.AllowUserToDeleteRows = false;
             this.ipArray.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.ipArray.Location = new System.Drawing.Point(37, 35);
             this.ipArray.Name = "ipArray";
+            this.ipArray.ReadOnly = true;
             this.ipArray.Size = new System.Drawing.Size(245, 163);
             this.ipArray.TabIndex = 3;
             // 
@@ -133,6 +139,8 @@ namespace RTTAnalyser
             // 
             // tabPage2
             // 
+            this.tabPage2.Controls.Add(this.label5);
+            this.tabPage2.Controls.Add(this.intenetStatusTextBox);
             this.tabPage2.Controls.Add(this.botLink);
             this.tabPage2.Controls.Add(this.label4);
             this.tabPage2.Controls.Add(this.CountMembersTextBox);
@@ -149,6 +157,23 @@ namespace RTTAnalyser
             this.tabPage2.TabIndex = 1;
             this.tabPage2.Text = "tabPage2";
             this.tabPage2.UseVisualStyleBackColor = true;
+            // 
+            // label5
+            // 
+            this.label5.AutoSize = true;
+            this.label5.Location = new System.Drawing.Point(135, 72);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(70, 13);
+            this.label5.TabIndex = 10;
+            this.label5.Text = "IntenetStatus";
+            // 
+            // intenetStatusTextBox
+            // 
+            this.intenetStatusTextBox.Location = new System.Drawing.Point(126, 91);
+            this.intenetStatusTextBox.Name = "intenetStatusTextBox";
+            this.intenetStatusTextBox.ReadOnly = true;
+            this.intenetStatusTextBox.Size = new System.Drawing.Size(100, 20);
+            this.intenetStatusTextBox.TabIndex = 9;
             // 
             // botLink
             // 
@@ -229,6 +254,26 @@ namespace RTTAnalyser
             this.AvgPingTextBox.Size = new System.Drawing.Size(100, 20);
             this.AvgPingTextBox.TabIndex = 0;
             // 
+            // tabPage3
+            // 
+            this.tabPage3.Controls.Add(this.cartesianChart);
+            this.tabPage3.Location = new System.Drawing.Point(4, 22);
+            this.tabPage3.Name = "tabPage3";
+            this.tabPage3.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPage3.Size = new System.Drawing.Size(414, 289);
+            this.tabPage3.TabIndex = 2;
+            this.tabPage3.Text = "tabPage3";
+            this.tabPage3.UseVisualStyleBackColor = true;
+            // 
+            // cartesianChart
+            // 
+            this.cartesianChart.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.cartesianChart.Location = new System.Drawing.Point(3, 3);
+            this.cartesianChart.Name = "cartesianChart";
+            this.cartesianChart.Size = new System.Drawing.Size(408, 283);
+            this.cartesianChart.TabIndex = 0;
+            this.cartesianChart.Text = "cartesianChart";
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -245,6 +290,7 @@ namespace RTTAnalyser
             ((System.ComponentModel.ISupportInitialize)(this.ipArray)).EndInit();
             this.tabPage2.ResumeLayout(false);
             this.tabPage2.PerformLayout();
+            this.tabPage3.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
@@ -268,6 +314,10 @@ namespace RTTAnalyser
         private System.Windows.Forms.Button StopButton;
         private System.Windows.Forms.Label configLabel;
         private System.Windows.Forms.ComboBox InternetIpList;
+        private System.Windows.Forms.Label label5;
+        private System.Windows.Forms.TextBox intenetStatusTextBox;
+        private System.Windows.Forms.TabPage tabPage3;
+        private LiveCharts.WinForms.CartesianChart cartesianChart;
     }
 }
 

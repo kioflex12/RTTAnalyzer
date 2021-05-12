@@ -10,8 +10,9 @@ namespace RTTAnalyser
 {
     class LocalNetwork
     {
-        public static void GetLocalAddress(MainForm mainForm)
+        public static void GetLocalAddress(Status status, string intenetAdress)
         {
+            status.IpList = intenetAdress;
             if (!System.Net.NetworkInformation.NetworkInterface.GetIsNetworkAvailable())
                 return;
 
@@ -21,8 +22,8 @@ namespace RTTAnalyser
             {
                 if (ip.AddressFamily == AddressFamily.InterNetwork)
                 {
-                    mainForm.Status.CountMembers++;
-                    mainForm.Status.IpList = ip.ToString();
+                    status.CountMembers++;
+                    status.IpList = ip.ToString();
                 }
             }
         }

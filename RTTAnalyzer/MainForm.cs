@@ -1,4 +1,5 @@
-﻿using System;
+﻿using LiveCharts.Wpf;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -16,9 +17,11 @@ namespace RTTAnalyser
     {
         public DataGridView IpArray => ipArray;
         public Status Status;
-        private Thread _thread;
+        public Chart Chart;
         private DirectoryController directoryController;
         private ThreadController _threadController;
+        private InternetAdress _internetAdress;
+
         
         public MainForm()
         {
@@ -28,15 +31,32 @@ namespace RTTAnalyser
         private void MainForm_Load(object sender, EventArgs e)
         {
             directoryController = new DirectoryController();
-            directoryController.ClearTempDirectory();
             Status = new Status();
             _threadController = new ThreadController(Status, this);
+            _internetAdress = new InternetAdress();
+            Chart = new Chart(IpArray, cartesianChart, Status);
+            directoryController.ClearTempDirectory();
+            
+            
             tabControl1.TabPages[0].Text = "Главная";
             tabControl1.TabPages[1].Text = "Status";
+            tabControl1.TabPages[2].Text = "График";
+            
+            InitIpComboBox();
             InternetIpList.SelectedItem = InternetIpList.Items[0];
+
+
 
         }
 
+        private void InitIpComboBox()
+        {
+            foreach (var dns in _internetAdress.GetAllDns())
+            {
+                InternetIpList.Items.Add(dns);
+
+            }
+        }
 
         private void StartButton_Click(object sender, EventArgs e)
         {
@@ -45,7 +65,8 @@ namespace RTTAnalyser
             ipArray.Columns.Clear();
 
             ChangeStateControllsButtons();
-            LocalNetwork.GetLocalAddress(this);
+            LocalNetwork.GetLocalAddress(Status,
+                _internetAdress.GetIp(InternetIpList.SelectedItem.ToString()));
             _threadController.StartThread();
            
 
@@ -64,6 +85,7 @@ namespace RTTAnalyser
             MaxPingTextBox.Text = Status.MaxPing.ToString();
             NetworkStatusTextBox.Text = Status.NetworkStatus.ToString();
             CountMembersTextBox.Text = Status.CountMembers.ToString();
+            intenetStatusTextBox.Text = Status.IntenetStatus.ToString();
         }
 
         private void OnFormClosing(object sender, EventArgs e)

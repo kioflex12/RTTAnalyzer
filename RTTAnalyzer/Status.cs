@@ -15,6 +15,7 @@ namespace RTTAnalyser
         private int _avgPing = 0;
         private string _networkStatus = "bad";
         private int _maxPing = 0;
+        private bool _intenetStatus = false;
 
 
         public string IpList { set => _ipList.Add(value); }
@@ -23,5 +24,6 @@ namespace RTTAnalyser
         public int AvgPing { get => _avgPing; set => _avgPing = value; }
         public int MaxPing { get => _maxPing; set => _maxPing = value; }
         public string NetworkStatus { get => _networkStatus; set => _networkStatus = value; }
+        public bool IntenetStatus { get => _intenetStatus; set => _intenetStatus = value; }
     }
 }
