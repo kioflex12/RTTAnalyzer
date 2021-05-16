@@ -39,7 +39,6 @@ namespace RTTAnalyser
             this.tabPage2 = new System.Windows.Forms.TabPage();
             this.label5 = new System.Windows.Forms.Label();
             this.intenetStatusTextBox = new System.Windows.Forms.TextBox();
-            this.botLink = new System.Windows.Forms.LinkLabel();
             this.label4 = new System.Windows.Forms.Label();
             this.CountMembersTextBox = new System.Windows.Forms.TextBox();
             this.label3 = new System.Windows.Forms.Label();
@@ -50,6 +49,7 @@ namespace RTTAnalyser
             this.AvgPingTextBox = new System.Windows.Forms.TextBox();
             this.tabPage3 = new System.Windows.Forms.TabPage();
             this.cartesianChart = new LiveCharts.WinForms.CartesianChart();
+            this.logLabel = new System.Windows.Forms.Label();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.ipArray)).BeginInit();
@@ -71,6 +71,7 @@ namespace RTTAnalyser
             // 
             // tabPage1
             // 
+            this.tabPage1.Controls.Add(this.logLabel);
             this.tabPage1.Controls.Add(this.InternetIpList);
             this.tabPage1.Controls.Add(this.configLabel);
             this.tabPage1.Controls.Add(this.StopButton);
@@ -141,7 +142,6 @@ namespace RTTAnalyser
             // 
             this.tabPage2.Controls.Add(this.label5);
             this.tabPage2.Controls.Add(this.intenetStatusTextBox);
-            this.tabPage2.Controls.Add(this.botLink);
             this.tabPage2.Controls.Add(this.label4);
             this.tabPage2.Controls.Add(this.CountMembersTextBox);
             this.tabPage2.Controls.Add(this.label3);
@@ -174,17 +174,6 @@ namespace RTTAnalyser
             this.intenetStatusTextBox.ReadOnly = true;
             this.intenetStatusTextBox.Size = new System.Drawing.Size(100, 20);
             this.intenetStatusTextBox.TabIndex = 9;
-            // 
-            // botLink
-            // 
-            this.botLink.AutoSize = true;
-            this.botLink.Location = new System.Drawing.Point(30, 251);
-            this.botLink.Name = "botLink";
-            this.botLink.Size = new System.Drawing.Size(129, 13);
-            this.botLink.TabIndex = 8;
-            this.botLink.TabStop = true;
-            this.botLink.Text = "https://t.me/ping_api_bot";
-            this.botLink.LinkClicked += new System.Windows.Forms.LinkLabelLinkClickedEventHandler(this.linkLabel1_LinkClicked);
             // 
             // label4
             // 
@@ -274,6 +263,17 @@ namespace RTTAnalyser
             this.cartesianChart.TabIndex = 0;
             this.cartesianChart.Text = "cartesianChart";
             // 
+            // logLabel
+            // 
+            this.logLabel.AutoSize = true;
+            this.logLabel.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.logLabel.Location = new System.Drawing.Point(34, 239);
+            this.logLabel.Name = "logLabel";
+            this.logLabel.Size = new System.Drawing.Size(25, 13);
+            this.logLabel.TabIndex = 8;
+            this.logLabel.Text = "Log";
+            this.logLabel.Click += new System.EventHandler(this.logLabel_Click);
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -310,7 +310,6 @@ namespace RTTAnalyser
         private System.Windows.Forms.TextBox MaxPingTextBox;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.TextBox AvgPingTextBox;
-        private System.Windows.Forms.LinkLabel botLink;
         private System.Windows.Forms.Button StopButton;
         private System.Windows.Forms.Label configLabel;
         private System.Windows.Forms.ComboBox InternetIpList;
@@ -318,6 +317,7 @@ namespace RTTAnalyser
         private System.Windows.Forms.TextBox intenetStatusTextBox;
         private System.Windows.Forms.TabPage tabPage3;
         public LiveCharts.WinForms.CartesianChart cartesianChart;
+        private System.Windows.Forms.Label logLabel;
     }
 }
 

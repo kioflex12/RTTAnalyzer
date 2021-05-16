@@ -102,7 +102,11 @@ namespace RTTAnalyser
         static void WriteLog(String message)
         {
             var msg = $"[{DateTime.Now.ToShortTimeString()}] {message}\r\n";
-            MessageBox.Show(msg);
+            using (StreamWriter sw = new StreamWriter("log.txt", true, System.Text.Encoding.Default))
+            {
+                sw.WriteLine(msg);
+            }
+            //MessageBox.Show(msg);
         }
 
         static void SaveSnapshot(net_state snapshot)
@@ -191,7 +195,7 @@ namespace RTTAnalyser
                     snapshot.router_rtt = prr.Status == IPStatus.Success ? (int)prr.RoundtripTime : PING_TIMEOUT;
                     if (prr.Status != IPStatus.Success)
                     {
-
+                        
                         //Роутер не доступен
                         snapshot.avg_rtts = new Dictionary<string, int>();
                         snapshot.http_ok = false;
@@ -201,15 +205,26 @@ namespace RTTAnalyser
                         {
                             snapshot.avg_rtts.Add(ci, PING_TIMEOUT);
                         }
+                        locker = true;
+                        MethodInvoker methodInvoker = delegate ()
+                        {
+                            _uI.ChangeStateControllsButtons();
+                        };
+                        _uI.Invoke(methodInvoker);
+                        
                         WriteLog("Router was unreachable.");
+                        _timer.Stop();
+                        return;
 
-                        SaveSnapshot(snapshot);
+
+                        //SaveSnapshot(snapshot);
                         if (prev_inet_ok)
                         {
                             //Нет доступа к интернету
                             prev_inet_ok = false;
                             first_fail_time = DateTime.Now;
                         }
+                       
                         return;
                     }
                     

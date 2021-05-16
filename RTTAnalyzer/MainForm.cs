@@ -74,7 +74,7 @@ namespace RTTAnalyser
         /// <summary>
         /// Смена активного состоянии для кнопки старт и стоп
         /// </summary>
-        private void ChangeStateControllsButtons()
+        public void ChangeStateControllsButtons()
         {
             StopButton.Enabled = !StopButton.Enabled;
             Thread.Sleep(1000);
@@ -103,10 +103,10 @@ namespace RTTAnalyser
             Environment.Exit(0);
         }
 
-        private void linkLabel1_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
-        {
-            Process.Start(botLink.Text);
-        }
+        //private void linkLabel1_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        //{
+        //    Process.Start(botLink.Text);
+        //}
 
         private void StopButton_Click(object sender, EventArgs e)
         {
@@ -119,6 +119,9 @@ namespace RTTAnalyser
             Process.Start("nmon.json");
         }
 
-
+        private void logLabel_Click(object sender, EventArgs e)
+        {
+            Process.Start("log.txt");
+        }
     }
 }
