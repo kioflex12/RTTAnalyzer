@@ -317,7 +317,7 @@ namespace RTTAnalyser
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.TextBox intenetStatusTextBox;
         private System.Windows.Forms.TabPage tabPage3;
-        private LiveCharts.WinForms.CartesianChart cartesianChart;
+        public LiveCharts.WinForms.CartesianChart cartesianChart;
     }
 }
 

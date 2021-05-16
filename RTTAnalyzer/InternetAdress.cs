@@ -1,17 +1,22 @@
 ﻿using Newtonsoft.Json;
-using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace RTTAnalyser
 {
+    /// <summary>
+    /// Интернет адресс из списка адрессов в IpConfig.json
+    /// </summary>
     class InternetAdress
     {
+        /// <summary>
+        /// список соотвествия DNS и IP
+        /// </summary>
         private Dictionary<string, string> dnsIpPair = new Dictionary<string, string>();
-
+        /// <summary>
+        /// Инциализации списка соотвествия между DNS и его IP адресса
+        /// </summary>
         public InternetAdress()
         {
             dnsIpPair = JsonConvert.DeserializeObject<Dictionary<string, string>>(File.ReadAllText("IpConfig.json"));

@@ -8,9 +8,17 @@ using System.Threading.Tasks;
 
 namespace RTTAnalyser
 {
+    /// <summary>
+    /// Локальная сеть 
+    /// </summary>
     class LocalNetwork
     {
-        public static void GetLocalAddress(Status status, string intenetAdress)
+        /// <summary>
+        /// устанавливает список локальных адресов
+        /// </summary>
+        /// <param name="status"></param>
+        /// <param name="intenetAdress"></param>
+        public static void SetIpList(Status status, string intenetAdress)
         {
             status.IpList = intenetAdress;
             if (!System.Net.NetworkInformation.NetworkInterface.GetIsNetworkAvailable())

@@ -1,35 +1,18 @@
 ﻿using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
-using System.Data;
 using System.IO;
-using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Net.NetworkInformation;
 using System.Net.Sockets;
-using System.Runtime.InteropServices;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace RTTAnalyser
 {
     static class Unalyser
     {
-        #region Service code (PInvoke)
-        [DllImport("kernel32.dll")]
-        static extern IntPtr GetConsoleWindow();
-
-        [DllImport("user32.dll")]
-        static extern bool ShowWindow(IntPtr hWnd, int nCmdShow);
-
-        const int SW_HIDE = 0;
-        const int SW_SHOW = 5;
-        #endregion
-
         #region params
         static String HTTP_TEST_HOST; // HTTP сервер, соединение до которого будем тестировать
         static int HTTP_TEST_PORT; // Порт HTTP сервера
@@ -52,7 +35,6 @@ namespace RTTAnalyser
 
         #region global vars
         static long start_measure_id = DateTime.Now.ToBinary();
-        static int seq_id = 1;
         static long total_time = 0;
         static int pkt_sent = 0;
         static int success_pkts = 0;
@@ -62,10 +44,14 @@ namespace RTTAnalyser
         static DateTime first_fail_time;
         static bool prev_inet_ok = true;
         static MainForm _uI;
+        /// <summary>
+        /// Переменная локер отвечающая за блокировку потока
+        /// </summary>
         public static bool locker = true;
         #endregion
 
         static List<string> dates = new List<string>() { };
+
         public static void InitAnylyzer(List<string> pingHosts, MainForm uI)
         {
             //Load config file
@@ -73,7 +59,6 @@ namespace RTTAnalyser
             var config = JsonConvert.DeserializeObject<Dictionary<String, Object>>(File.ReadAllText("nmon.json"));
             MethodInvoker methodInvoker = delegate ()
             {
-                //DataTable data = (DataTable)_uI.IpArray.DataSource;
                 foreach (DataGridViewColumn column in _uI.IpArray.Columns)
                 {
                     _uI.IpArray.Columns.Remove(column);
@@ -89,10 +74,8 @@ namespace RTTAnalyser
                 }
             };
             _uI.Invoke(methodInvoker);
+           
             PING_HOSTS = pingHosts;
-            //PING_HOSTS = PING_HOSTS = ((JArray)config["ping_hosts"]).ToObject<List<String>>();
-
-
             HTTP_TEST_HOST = (String)config["http_test_host"];
             ROUTER_IP = (String)config["router_ip"];
             HTTP_TEST_PORT = int.Parse((String)config["http_test_port"]);
@@ -111,74 +94,31 @@ namespace RTTAnalyser
             TG_TOKEN = (String)config["tg_token"];
             TG_CHAT_ID = (String)config["tg_chat_id"];
 
-            String CSV_HEADER = CSV_PATTERN
-                .Replace("FTIME", "Snapshot time")
-                .Replace("IUP", "Internet up")
-                .Replace("AVGRTT", "Average ping (ms)")
-                .Replace("ROUTERRTT", "Ping to router (ms)")
-                .Replace("LOSS", "Packet loss, %")
-                .Replace("MID", "Measure ID")
-                .Replace("SEQ", "SeqID")
-                .Replace("HTTP", "HTTP OK")
-                .Replace("STIME", "STime");
-            foreach (var host in PING_HOSTS)
-            {
-                CSV_HEADER = CSV_HEADER.Replace("RN", $"RTT to {host};RN");
-            }
-            CSV_HEADER = CSV_HEADER.Replace("RN", ";;\r\n");
-            if (WRITE_CSV)
-            {
-                if (!File.Exists(OUT_CSV_FILE)) File.WriteAllText(OUT_CSV_FILE, CSV_HEADER);
-            }
-            //_statusLabel = uI.GetStatusLabel;
-            //ShowWindow(GetConsoleWindow(), SW_HIDE);
+           
             DoMeasures();
         }
-        static async void TgNotify(String message, bool with_sound)
-        {
-            if (!TG_NOTIFY) return;
-            Dictionary<String, String> req_data = new Dictionary<string, string>();
-            req_data.Add("chat_id", TG_CHAT_ID);
-            req_data.Add("text", message);
-            req_data.Add("disable_notification", (!with_sound).ToString().ToLower());
-            String sf = JsonConvert.SerializeObject(req_data);
-            try
-            {
-                var result = await httpc.PostAsync($"https://api.telegram.org/bot{TG_TOKEN}/sendMessage", new StringContent(sf, System.Text.Encoding.UTF8, "application/json"));
-            }
-            catch
-            {
-            }
-        }
+
+      
         static void WriteLog(String message)
         {
             var msg = $"[{DateTime.Now.ToShortTimeString()}] {message}\r\n";
             MessageBox.Show(msg);
-            TgNotify(msg, false);
         }
 
         static void SaveSnapshot(net_state snapshot)
         {
             if (!locker)
             {
-                String raw_json = JsonConvert.SerializeObject(snapshot, Formatting.Indented);
-                String snapshot_path = Path.Combine(Environment.CurrentDirectory, "snapshots", $"net{snapshot.measure_id}.json");
-                File.WriteAllText(snapshot_path, raw_json);
-                String rtts = "";
+                //среднее значение ртт
                 int avg_rtt = 0;
+                //максимальное значение ртт
                 int max_rtt = 0;
+                //среднее значение ртт внутри локальной сети
                 int avg_rtt_local = 0;
-                //foreach (var ci in PING_HOSTS)
-                //{
-                //    rtts += $"{snapshot.avg_rtts[ci]};";
-                //    avg_rtt += snapshot.avg_rtts[ci];
-                //    max_rtt = snapshot.avg_rtts[ci] > max_rtt ? snapshot.avg_rtts[ci] : max_rtt;
+             
 
-
-
-                //}
-               
                 List<string> vs = new List<string>();
+                //т.к пингует отдельный поток чтобы UI не завис, нам необходим делегат , который позволит общаться между потоками
                 MethodInvoker methodInvoker = delegate ()
                 {
                     if (_uI.IpArray.Rows.Count > 0)
@@ -222,39 +162,16 @@ namespace RTTAnalyser
                     }
                     _uI.UpdateStatusSummary();
                 };
+                //invoke отправляет делегат родительскому потоку
                 _uI.Invoke(methodInvoker);
-
-
-
-
-                if (WRITE_CSV)
-                {
-                    //Generate RTT string
-                    rtts = "";
-                    avg_rtt = 0;
-                    foreach (var ci in PING_HOSTS)
-                    {
-                        rtts += $"{snapshot.avg_rtts[ci]};";
-                        avg_rtt += snapshot.avg_rtts[ci];
-                    }
-                    avg_rtt = avg_rtt / PING_HOSTS.Count;
-                    File.AppendAllText(OUT_CSV_FILE, CSV_PATTERN
-                        .Replace("FTIME", snapshot.measure_time.ToShortDateString() + " " + snapshot.measure_time.ToShortTimeString())
-                        .Replace("IUP", snapshot.inet_ok.ToString())
-                        .Replace("AVGRTT", avg_rtt.ToString())
-                        .Replace("ROUTERRTT", snapshot.router_rtt.ToString())
-                        .Replace("LOSS", snapshot.packet_loss.ToString())
-                        .Replace("HTTP", snapshot.http_ok.ToString())
-                        .Replace("MID", snapshot.measure_id.ToString())
-                        .Replace("STIME", snapshot.measure_time.ToShortTimeString())
-                        .Replace("SEQ", seq_id++.ToString())
-                        .Replace("RN", $"{rtts};;\r\n"));
-                }
             }
-            else return;
+            else 
+                return;
         }
 
-
+        ///<summary>
+        ///запускает программу проверки ping
+        ///</summary>
         private static void DoMeasures()
         {
             System.Timers.Timer _timer = new System.Timers.Timer();
@@ -269,13 +186,13 @@ namespace RTTAnalyser
                     snapshot.measure_id = start_measure_id++;
                     snapshot.measure_time = DateTime.Now;
                     Ping ping = new Ping();
-                    //First, check if router is available
+                    //Первая проверка если роутер активен
                     var prr = ping.Send(ROUTER_IP, PING_TIMEOUT);
                     snapshot.router_rtt = prr.Status == IPStatus.Success ? (int)prr.RoundtripTime : PING_TIMEOUT;
                     if (prr.Status != IPStatus.Success)
                     {
 
-                        //Router is unreachable. Don't waste resources
+                        //Роутер не доступен
                         snapshot.avg_rtts = new Dictionary<string, int>();
                         snapshot.http_ok = false;
                         snapshot.inet_ok = false;
@@ -289,13 +206,13 @@ namespace RTTAnalyser
                         SaveSnapshot(snapshot);
                         if (prev_inet_ok)
                         {
-                            //Internet was fine but failed now
+                            //Нет доступа к интернету
                             prev_inet_ok = false;
                             first_fail_time = DateTime.Now;
                         }
                         return;
                     }
-                    //Still alive so router is up
+                    
                     try
                     {
                         snapshot.http_ok = true;
@@ -330,33 +247,22 @@ namespace RTTAnalyser
                         snapshot.packet_loss >= MAX_PKT_LOSS ||
                         snapshot.router_rtt == PING_TIMEOUT);
                     SaveSnapshot(snapshot);
-                    if (prev_inet_ok && !snapshot.inet_ok)
-                    {
-                        //Internet was fine but failed now
-                        prev_inet_ok = false;
-                        first_fail_time = DateTime.Now;
-                    }
-                    else if (!prev_inet_ok && snapshot.inet_ok)
-                    {
-                        String t_s = new TimeSpan(DateTime.Now.Ticks - first_fail_time.Ticks).ToString(@"hh\:mm\:ss");
-                        TgNotify($"Internet was down from {first_fail_time.ToShortTimeString()} to {DateTime.Now.ToShortTimeString()} (downtime {t_s})\r\n\r\n" +
-                            $"Current average ping: {snapshot.avg_rtts.Values.Average()} ms\r\n" +
-                            $"HTTP test: " + (snapshot.http_ok ? "PASSED" : "FAILED") + "\r\n" +
-                            $"Packet loss: " + (snapshot.packet_loss * 100).ToString("N2"), true);
-                        prev_inet_ok = true;
-                    }
+                   
                 }
-                else _timer.Stop() ;
+                else 
+                    _timer.Stop() ;
             };
-            //Foo();
             ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12 | SecurityProtocolType.Tls11 | SecurityProtocolType.Tls;
             httpc = new HttpClient();
             _timer.Start();
-            //TgNotify("nmon is now running", true);
             if (locker)
                 return ;
             while (true) Thread.Sleep(1000000);
         }
+        /// <summary>
+        /// Пингует переданный хост (arg)
+        /// </summary>
+        /// <param name="arg"></param>
         static void PerformPingTest(Object arg)
         {
             String host = (String)arg;
@@ -428,6 +334,9 @@ namespace RTTAnalyser
             return;
         }
     }
+    /// <summary>
+    /// Представление однотипных данных под структурой
+    /// </summary>
     struct net_state
     {
         public bool inet_ok;

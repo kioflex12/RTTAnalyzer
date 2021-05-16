@@ -7,8 +7,14 @@ using System.Threading.Tasks;
 
 namespace RTTAnalyser
 {
+    /// <summary>
+    /// Управляет дерикторией с конфигом
+    /// </summary>
     class DirectoryController
     {
+        /// <summary>
+        /// очищает папку snapshots
+        /// </summary>
         public void ClearTempDirectory()
         {
             DirectoryInfo dirPath = new DirectoryInfo("snapshots");

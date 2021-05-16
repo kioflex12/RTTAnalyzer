@@ -1,14 +1,6 @@
-﻿using LiveCharts.Wpf;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
+﻿using System;
 using System.Diagnostics;
-using System.Drawing;
-using System.Linq;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace RTTAnalyser
@@ -16,39 +8,47 @@ namespace RTTAnalyser
     public partial class MainForm : Form
     {
         public DataGridView IpArray => ipArray;
-        public Status Status;
-        public Chart Chart;
-        private DirectoryController directoryController;
-        private ThreadController _threadController;
-        private InternetAdress _internetAdress;
-
         
+        public Status Status;
+        public Chart  Chart;
+
+        private DirectoryController _directoryController;
+        private ThreadController    _threadController;
+        private InternetAdress      _internetAdress;
+
+
         public MainForm()
         {
             InitializeComponent();
         }
-
+        /// <summary>
+        /// Метод который запускается во время загрузки формы
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void MainForm_Load(object sender, EventArgs e)
         {
-            directoryController = new DirectoryController();
+            _directoryController = new DirectoryController();
             Status = new Status();
             _threadController = new ThreadController(Status, this);
             _internetAdress = new InternetAdress();
-            Chart = new Chart(IpArray, cartesianChart, Status);
-            directoryController.ClearTempDirectory();
-            
-            
+            Chart = new Chart(cartesianChart, Status);
+            _directoryController.ClearTempDirectory();
+
+
             tabControl1.TabPages[0].Text = "Главная";
             tabControl1.TabPages[1].Text = "Status";
             tabControl1.TabPages[2].Text = "График";
-            
+
             InitIpComboBox();
             InternetIpList.SelectedItem = InternetIpList.Items[0];
 
 
 
         }
-
+        /// <summary>
+        /// Метод инциализации Combox
+        /// </summary>
         private void InitIpComboBox()
         {
             foreach (var dns in _internetAdress.GetAllDns())
@@ -60,25 +60,30 @@ namespace RTTAnalyser
 
         private void StartButton_Click(object sender, EventArgs e)
         {
-            
+
             Status.GetIpList.Clear();
             ipArray.Columns.Clear();
 
             ChangeStateControllsButtons();
-            LocalNetwork.GetLocalAddress(Status,
+            LocalNetwork.SetIpList(Status,
                 _internetAdress.GetIp(InternetIpList.SelectedItem.ToString()));
             _threadController.StartThread();
-           
+
 
         }
-
-       private void ChangeStateControllsButtons()
+        /// <summary>
+        /// Смена активного состоянии для кнопки старт и стоп
+        /// </summary>
+        private void ChangeStateControllsButtons()
         {
             StopButton.Enabled = !StopButton.Enabled;
             Thread.Sleep(1000);
             StartButton.Enabled = !StartButton.Enabled;
         }
 
+        /// <summary>
+        /// Обновление сводки во вкладке статус
+        /// </summary>
         public void UpdateStatusSummary()
         {
             AvgPingTextBox.Text = Status.AvgPing.ToString();
@@ -87,9 +92,14 @@ namespace RTTAnalyser
             CountMembersTextBox.Text = Status.CountMembers.ToString();
             intenetStatusTextBox.Text = Status.IntenetStatus.ToString();
         }
-
+        /// <summary>
+        /// Срабатывает при закрытии формы
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void OnFormClosing(object sender, EventArgs e)
         {
+            _threadController.CloseThread();
             Environment.Exit(0);
         }
 
@@ -109,6 +119,6 @@ namespace RTTAnalyser
             Process.Start("nmon.json");
         }
 
-       
+
     }
 }
