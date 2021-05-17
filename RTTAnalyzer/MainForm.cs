@@ -8,11 +8,11 @@ namespace RTTAnalyser
     public partial class MainForm : Form
     {
         public DataGridView IpArray => ipArray;
-        
+        public Button GetStartButton => StartButton;
+        public Button GetSetIpButton => SetLocalIpButton;
         public Status Status;
         public Chart  Chart;
 
-        private DirectoryController _directoryController;
         private ThreadController    _threadController;
         private InternetAdress      _internetAdress;
 
@@ -28,12 +28,7 @@ namespace RTTAnalyser
         /// <param name="e"></param>
         private void MainForm_Load(object sender, EventArgs e)
         {
-            _directoryController = new DirectoryController();
-            Status = new Status();
-            _threadController = new ThreadController(Status, this);
-            _internetAdress = new InternetAdress();
-            Chart = new Chart(cartesianChart, Status);
-            _directoryController.ClearTempDirectory();
+            InitComponennt();
 
 
             tabControl1.TabPages[0].Text = "Главная";
@@ -41,11 +36,22 @@ namespace RTTAnalyser
             tabControl1.TabPages[2].Text = "График";
 
             InitIpComboBox();
+           
             InternetIpList.SelectedItem = InternetIpList.Items[0];
 
 
 
         }
+       
+        
+        private void InitComponennt()
+        {
+            Status = new Status();
+            _threadController = new ThreadController(Status, this);
+            _internetAdress = new InternetAdress();
+            Chart = new Chart(cartesianChart, Status);
+        }
+
         /// <summary>
         /// Метод инциализации Combox
         /// </summary>
@@ -57,16 +63,21 @@ namespace RTTAnalyser
 
             }
         }
-
+       
         private void StartButton_Click(object sender, EventArgs e)
         {
 
             Status.GetIpList.Clear();
             ipArray.Columns.Clear();
 
+
             ChangeStateControllsButtons();
-            LocalNetwork.SetIpList(Status,
-                _internetAdress.GetIp(InternetIpList.SelectedItem.ToString()));
+            Status.IpList = InternetIpList.SelectedItem.ToString();
+            foreach (var item in testListBox.Items)
+            {
+                Status.IpList = item.ToString();
+            }
+           
             _threadController.StartThread();
 
 
@@ -122,6 +133,25 @@ namespace RTTAnalyser
         private void logLabel_Click(object sender, EventArgs e)
         {
             Process.Start("log.txt");
+        }
+
+        private void SetLocalIpButton_Click(object sender, EventArgs e)
+        {
+            LocalNetwork.SetIpList(this,
+                _internetAdress.GetIp(InternetIpList.SelectedItem.ToString()),SubnetMask.Text);
+            SetLocalIpButton.Enabled = false;
+            StartButton.Enabled = false;
+        }
+
+      
+
+        private void SubnetMask_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            char ch = e.KeyChar;
+            if (Char.IsDigit(ch) || ch == 8 || ch == 46)
+                return;
+            else
+                e.Handled = true;
         }
     }
 }

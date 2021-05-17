@@ -31,12 +31,17 @@ namespace RTTAnalyser
         {
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
+            this.logLabel = new System.Windows.Forms.Label();
             this.InternetIpList = new System.Windows.Forms.ComboBox();
             this.configLabel = new System.Windows.Forms.Label();
             this.StopButton = new System.Windows.Forms.Button();
             this.ipArray = new System.Windows.Forms.DataGridView();
             this.StartButton = new System.Windows.Forms.Button();
             this.tabPage2 = new System.Windows.Forms.TabPage();
+            this.label6 = new System.Windows.Forms.Label();
+            this.SubnetMask = new System.Windows.Forms.TextBox();
+            this.SetLocalIpButton = new System.Windows.Forms.Button();
+            this.testListBox = new System.Windows.Forms.ListBox();
             this.label5 = new System.Windows.Forms.Label();
             this.intenetStatusTextBox = new System.Windows.Forms.TextBox();
             this.label4 = new System.Windows.Forms.Label();
@@ -49,7 +54,6 @@ namespace RTTAnalyser
             this.AvgPingTextBox = new System.Windows.Forms.TextBox();
             this.tabPage3 = new System.Windows.Forms.TabPage();
             this.cartesianChart = new LiveCharts.WinForms.CartesianChart();
-            this.logLabel = new System.Windows.Forms.Label();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.ipArray)).BeginInit();
@@ -85,6 +89,17 @@ namespace RTTAnalyser
             this.tabPage1.TabIndex = 0;
             this.tabPage1.Text = "tabPage1";
             this.tabPage1.UseVisualStyleBackColor = true;
+            // 
+            // logLabel
+            // 
+            this.logLabel.AutoSize = true;
+            this.logLabel.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.logLabel.Location = new System.Drawing.Point(34, 239);
+            this.logLabel.Name = "logLabel";
+            this.logLabel.Size = new System.Drawing.Size(25, 13);
+            this.logLabel.TabIndex = 8;
+            this.logLabel.Text = "Log";
+            this.logLabel.Click += new System.EventHandler(this.logLabel_Click);
             // 
             // InternetIpList
             // 
@@ -140,6 +155,10 @@ namespace RTTAnalyser
             // 
             // tabPage2
             // 
+            this.tabPage2.Controls.Add(this.label6);
+            this.tabPage2.Controls.Add(this.SubnetMask);
+            this.tabPage2.Controls.Add(this.SetLocalIpButton);
+            this.tabPage2.Controls.Add(this.testListBox);
             this.tabPage2.Controls.Add(this.label5);
             this.tabPage2.Controls.Add(this.intenetStatusTextBox);
             this.tabPage2.Controls.Add(this.label4);
@@ -157,6 +176,41 @@ namespace RTTAnalyser
             this.tabPage2.TabIndex = 1;
             this.tabPage2.Text = "tabPage2";
             this.tabPage2.UseVisualStyleBackColor = true;
+            // 
+            // label6
+            // 
+            this.label6.AutoSize = true;
+            this.label6.Location = new System.Drawing.Point(151, 186);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(84, 13);
+            this.label6.TabIndex = 14;
+            this.label6.Text = "Маска подсети";
+            // 
+            // SubnetMask
+            // 
+            this.SubnetMask.Location = new System.Drawing.Point(151, 205);
+            this.SubnetMask.Name = "SubnetMask";
+            this.SubnetMask.Size = new System.Drawing.Size(100, 20);
+            this.SubnetMask.TabIndex = 13;
+            this.SubnetMask.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.SubnetMask_KeyPress);
+            // 
+            // SetLocalIpButton
+            // 
+            this.SetLocalIpButton.Location = new System.Drawing.Point(151, 231);
+            this.SetLocalIpButton.Name = "SetLocalIpButton";
+            this.SetLocalIpButton.Size = new System.Drawing.Size(189, 23);
+            this.SetLocalIpButton.TabIndex = 12;
+            this.SetLocalIpButton.Text = "Установить список локальных адресов";
+            this.SetLocalIpButton.UseVisualStyleBackColor = true;
+            this.SetLocalIpButton.Click += new System.EventHandler(this.SetLocalIpButton_Click);
+            // 
+            // testListBox
+            // 
+            this.testListBox.FormattingEnabled = true;
+            this.testListBox.Location = new System.Drawing.Point(18, 159);
+            this.testListBox.Name = "testListBox";
+            this.testListBox.Size = new System.Drawing.Size(120, 95);
+            this.testListBox.TabIndex = 11;
             // 
             // label5
             // 
@@ -263,17 +317,6 @@ namespace RTTAnalyser
             this.cartesianChart.TabIndex = 0;
             this.cartesianChart.Text = "cartesianChart";
             // 
-            // logLabel
-            // 
-            this.logLabel.AutoSize = true;
-            this.logLabel.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.logLabel.Location = new System.Drawing.Point(34, 239);
-            this.logLabel.Name = "logLabel";
-            this.logLabel.Size = new System.Drawing.Size(25, 13);
-            this.logLabel.TabIndex = 8;
-            this.logLabel.Text = "Log";
-            this.logLabel.Click += new System.EventHandler(this.logLabel_Click);
-            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -318,6 +361,10 @@ namespace RTTAnalyser
         private System.Windows.Forms.TabPage tabPage3;
         public LiveCharts.WinForms.CartesianChart cartesianChart;
         private System.Windows.Forms.Label logLabel;
+        public System.Windows.Forms.ListBox testListBox;
+        private System.Windows.Forms.Button SetLocalIpButton;
+        private System.Windows.Forms.TextBox SubnetMask;
+        private System.Windows.Forms.Label label6;
     }
 }
 
