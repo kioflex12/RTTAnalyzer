@@ -10,6 +10,7 @@ namespace RTTAnalyser
     /// </summary>
     class InternetAdress
     {
+       
         /// <summary>
         /// список соотвествия DNS и IP
         /// </summary>
