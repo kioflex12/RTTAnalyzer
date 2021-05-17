@@ -151,7 +151,7 @@ namespace RTTAnalyser
                     _uI.Chart.UpdateChart(snapshot.measure_time.ToString(), snapshot.avg_rtts[PING_HOSTS[0]]);
 
                     _uI.Status.AvgPing = avg_rtt;
-                    _uI.Status.CountMembers = PING_HOSTS.Count;
+                    _uI.Status.CountMembers = PING_HOSTS.Count - 1;
                     _uI.Status.IntenetStatus = snapshot.inet_ok;
                     if ((avg_rtt_local / PING_HOSTS.Count - 1) < 1)
                     {

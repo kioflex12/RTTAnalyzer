@@ -27,13 +27,25 @@ namespace RTTAnalyser
 
         public static async void SetIpList(MainForm mainForm, string intenetAdress, string mask = "192.168.0")
         {
+            var host = Dns.GetHostEntry(Dns.GetHostName());
             mainForm.Status.IpList = intenetAdress;
-            for (int i = 2; i <= 255; i++)
+            for (int i = 0; i <= 255; i++)
             {
+                
                 string ipnum = $"{mask}.{i}";
+                foreach (var address in host.AddressList)
+                {
+                    if (address.ToString() == ipnum)
+                    {
+                        continue;
+                    }
+                   
+                }
                 await Task.Run(() => PingCheck(ipnum, mainForm));
 
-               
+
+
+
             }
             mainForm.GetStartButton.Enabled = true;
             mainForm.GetSetIpButton.Enabled = true;
